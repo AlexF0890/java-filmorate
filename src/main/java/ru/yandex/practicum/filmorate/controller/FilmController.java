@@ -56,7 +56,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
         if (!films.containsKey(film.getId())) {
             log.error("Фильм с таким Id не существует");

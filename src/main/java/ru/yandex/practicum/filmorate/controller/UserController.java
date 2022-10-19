@@ -55,7 +55,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public User updateUser(@Validated @RequestBody final User user) {
         if (!users.containsKey(user.getId())) {
             log.error("Пользователь с таким Id не существует");
