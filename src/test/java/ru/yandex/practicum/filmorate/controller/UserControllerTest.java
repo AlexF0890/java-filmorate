@@ -16,7 +16,7 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         userController = new UserController();
-        user = new User(0, "alex@mail.ru", "Alex", "Alex3000", LocalDate.of(1992,11,01));
+        user = new User("Alex", "Alex3000", 0, "alex@mail.ru", LocalDate.of(1992,11,01));
     }
 
     @Test
@@ -36,7 +36,7 @@ class UserControllerTest {
                 () -> assertEquals(user.getBirthday(), userController.getUsers().get(1).getBirthday())
         );
 
-        User userTwo = new User(user.getId(),"alex1845@mail.ru", "Alexandr", "", LocalDate.of(2020,10,12));
+        User userTwo = new User("Aleksandr","alex1845@mail.ru", user.getId(), "alex1845@mail.ru", LocalDate.of(2020,10,12));
         userController.updateUser(userTwo);
         assertEquals(userController.getUsers().size(), 1, "Фильм не завелся");
         assertAll("Значение не изменилось",

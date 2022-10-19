@@ -8,11 +8,11 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class User extends HttpEntity<User> {
-    private int id;
-    private final String email;
+public class User {
     private final String login;
     private String name;
+    private int id;
+    private final String email;
     private final LocalDate birthday;
 
 }
