@@ -36,7 +36,7 @@ class UserControllerTest {
                 () -> assertEquals(user.getBirthday(), userController.getUsers().get(1).getBirthday())
         );
 
-        User userTwo = new User("Aleksandr","alex1845@mail.ru", user.getId(), "alex1845@mail.ru", LocalDate.of(2020,10,12));
+        User userTwo = new User("Aleksandr","", user.getId(), "alex1845@mail.ru", LocalDate.of(2020,10,12));
         userController.updateUser(userTwo);
         assertEquals(userController.getUsers().size(), 1, "Фильм не завелся");
         assertAll("Значение не изменилось",
