@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class FilmController {
         } else if (film.getReleaseDate().isBefore(LocalDate.of(1895,12, 28 ))) {
             log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-        } else if (film.getDuration() <= 0) {
+        } else if (film.getDuration().getSeconds() <= 0) {
             log.error("Длительность фильма не должна быть меньше или равна нулю");
             throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
         }
@@ -65,7 +64,7 @@ public class FilmController {
         } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-        } else if (film.getDuration() <= 0) {
+        } else if (film.getDuration().getSeconds() <= 0) {
             log.error("Длительность фильма не должна быть меньше или равна нулю");
             throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
         }

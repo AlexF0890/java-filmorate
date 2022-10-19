@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class FilmControllerTest {
     @BeforeEach
     void setUp() {
         filmController = new FilmController();
-        film = new Film(0,"FilmOne", "New Film", LocalDate.of(1895,12,31), 120);
+        film = new Film(0,"FilmOne", "New Film", LocalDate.of(1895,12,31), Duration.ofSeconds(12000));
     }
 
     @Test
@@ -36,7 +37,7 @@ class FilmControllerTest {
                 () -> assertEquals(film.getDuration(), filmController.getFilms().get(1).getDuration())
         );
 
-        Film filmTwo = new Film(film.getId(),"Film", "Film", LocalDate.of(1899,11,30), 150);
+        Film filmTwo = new Film(film.getId(),"Film", "Film", LocalDate.of(1899,11,30), Duration.ofSeconds(15000));
         filmController.updateFilm(filmTwo);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не обновился");
         assertAll("Значение не изменилось",
