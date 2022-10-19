@@ -44,7 +44,7 @@ public class FilmController {
                 log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата релиза фильма не может быть раньше 28 декабря 1895 года");
             }
-            if (film.getDuration().getSeconds() <= 0) {
+            if (film.getDuration() <= 0) {
                 log.error("Длительность фильма не должна быть меньше или равна нулю");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Длительность фильма не должна быть меньше или равна нулю");
             }
@@ -74,7 +74,7 @@ public class FilmController {
                 log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата релиза фильма не может быть раньше 28 декабря 1895 года");
             }
-            if (film.getDuration().getSeconds() <= 0) {
+            if (film.getDuration() <= 0) {
                 log.error("Длительность фильма не должна быть меньше или равна нулю");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Длительность фильма не должна быть меньше или равна нулю");
             }

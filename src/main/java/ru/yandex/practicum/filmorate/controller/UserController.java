@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -39,7 +40,7 @@ public class UserController {
                 log.error("Логин не должен содержать пробелы и не может быть пустым");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Логин не должен содержать пробелы и не может быть пустым");
             }
-            if (user.getName().isBlank() || user.getName().equals("")) {
+            if (user.getName() == null || user.getName().equals("")) {
                 log.info("Имя не указано. Имени будет присвои логин.");
                 user.setName(user.getLogin());
             }
