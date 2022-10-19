@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -29,24 +30,29 @@ public class FilmController {
     public Film createFilm(@Validated @RequestBody Film film) {
         if (films.containsKey(film.getId())) {
             log.error("Фильм с таким Id уже существует");
-            throw new ValidationException("Фильм уже существует");
-        } else if(film.getName().isBlank()) {
-            log.error("Название фильма не должно быть пустым");
-            throw new ValidationException("Название фильма не должно быть пустым");
-        } else if (film.getDescription().length() > 200) {
-            log.error("Описание фильма не должно привышать 200 символов");
-            throw new ValidationException("Описание фильма не должно привышать 200 символов");
-        } else if (film.getReleaseDate().isBefore(LocalDate.of(1895,12, 28 ))) {
-            log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-            throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-        } else if (film.getDuration().getSeconds() <= 0) {
-            log.error("Длительность фильма не должна быть меньше или равна нулю");
-            throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
-        }
-        increaseIdFilm();
-        film.setId(idFilm);
-        films.put(idFilm, film);
-        log.info("Фильм добавлен в список");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "Фильм уже существует");
+        } else {
+            if(film.getName().isBlank()) {
+                log.error("Название фильма не должно быть пустым");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Название фильма не должно быть пустым");
+            }
+            if (film.getDescription().length() > 200) {
+                log.error("Описание фильма не должно привышать 200 символов");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Описание фильма не должно привышать 200 символов");
+            }
+            if (film.getReleaseDate().isBefore(LocalDate.of(1895,12, 28 ))) {
+                log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+            }
+            if (film.getDuration().getSeconds() <= 0) {
+                log.error("Длительность фильма не должна быть меньше или равна нулю");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Длительность фильма не должна быть меньше или равна нулю");
+            }
+                increaseIdFilm();
+                film.setId(idFilm);
+                films.put(idFilm, film);
+                log.info("Фильм добавлен в список");
+            }
         return film;
     }
 
@@ -54,23 +60,27 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
         if (!films.containsKey(film.getId())) {
             log.error("Фильм с таким Id не существует");
-            throw new ValidationException("Фильм с таким Id не существует");
-        } else if (film.getName().isBlank()) {
-            log.error("Название фильма не может быть пустым");
-               throw new ValidationException("Название фильма не может быть пустым");
-        } else if (film.getDescription().length() > 200) {
-            log.error("Описание фильма не должно привышать 200 символов");
-            throw new ValidationException("Описание фильма не должно привышать 200 символов");
-        } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-            throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
-        } else if (film.getDuration().getSeconds() <= 0) {
-            log.error("Длительность фильма не должна быть меньше или равна нулю");
-            throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "Фильм с таким Id не существует");
+        } else {
+            if (film.getName().isBlank()) {
+                log.error("Название фильма не может быть пустым");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Название фильма не может быть пустым");
+            }
+            if (film.getDescription().length() > 200) {
+                log.error("Описание фильма не должно привышать 200 символов");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Описание фильма не должно привышать 200 символов");
+            }
+            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+                log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+            }
+            if (film.getDuration().getSeconds() <= 0) {
+                log.error("Длительность фильма не должна быть меньше или равна нулю");
+                throw new ValidationException(HttpStatus.BAD_REQUEST, "Длительность фильма не должна быть меньше или равна нулю");
+            }
+                log.info("Информация о фильме обновлена");
+                films.put(film.getId(), film);
         }
-
-        log.info("Информация о фильме обновлена");
-        films.put(film.getId(), film);
         return film;
     }
 
