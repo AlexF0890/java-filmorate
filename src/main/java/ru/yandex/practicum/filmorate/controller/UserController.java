@@ -69,7 +69,7 @@ public class UserController {
                 log.debug("Имя не было измененно или присвоено имя логина");
                 user.setName(user.getLogin());
             }
-            if (user.getLogin().isBlank() || user.getLogin().equals("")) {
+            if (user.getLogin().isBlank() || user.getLogin().equals(" ")) {
                 log.info("Имя не указано. Имени будет присвои логин.");
                 throw new ValidationException(HttpStatus.BAD_REQUEST, "Логин не был изменен");
             }
