@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.annotation.Validated;
@@ -23,27 +24,31 @@ class FilmControllerTest {
     void createFilm() {
         filmController.createFilm(film);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не завелся");
+
+        Film filmTwo = filmController.getFilms().get(1);
+        assertAll("Значение не совпадают",
+                () -> assertEquals(film.getName(), filmTwo.getName()),
+                () -> assertEquals(film.getDescription(), filmTwo.getDescription()),
+                () -> assertEquals(film.getReleaseDate(), filmTwo.getReleaseDate()),
+                () -> assertEquals(film.getDuration(), filmTwo.getDuration())
+        );
     }
 
+    @SneakyThrows
     @Test
     void updateFilm() {
         filmController.createFilm(film);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не завелся");
-        assertAll("Значение не изменилось",
-                () -> assertEquals(film.getName(), filmController.getFilms().get(1).getName()),
-                () -> assertEquals(film.getDescription(), filmController.getFilms().get(1).getDescription()),
-                () -> assertEquals(film.getReleaseDate(), filmController.getFilms().get(1).getReleaseDate()),
-                () -> assertEquals(film.getDuration(), filmController.getFilms().get(1).getDuration())
-        );
 
         Film filmTwo = new Film(film.getId(),"Film", "Film", LocalDate.of(1899,11,30), 150);
         filmController.updateFilm(filmTwo);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не обновился");
+        Film filmThree = filmController.getFilms().get(1);
         assertAll("Значение не изменилось",
-                () -> assertEquals(filmTwo.getName(), filmController.getFilms().get(1).getName()),
-                () -> assertEquals(filmTwo.getDescription(), filmController.getFilms().get(1).getDescription()),
-                () -> assertEquals(filmTwo.getReleaseDate(), filmController.getFilms().get(1).getReleaseDate()),
-                () -> assertEquals(filmTwo.getDuration(), filmController.getFilms().get(1).getDuration())
+                () -> assertEquals(filmTwo.getName(), filmThree.getName()),
+                () -> assertEquals(filmTwo.getDescription(), filmThree.getDescription()),
+                () -> assertEquals(filmTwo.getReleaseDate(), filmThree.getReleaseDate()),
+                () -> assertEquals(filmTwo.getDuration(), filmThree.getDuration())
         );
     }
 }
