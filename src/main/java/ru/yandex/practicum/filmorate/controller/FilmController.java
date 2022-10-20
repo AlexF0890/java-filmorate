@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -20,16 +21,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("films")
 @Getter
 public class FilmController {
-    private ConcurrentHashMap<Integer, Film> films = new ConcurrentHashMap<>();
+    private Map<Integer, Film> films = new ConcurrentHashMap<>();
     private int idFilm = 0;
 
     private void increaseIdFilm() {
         ++idFilm;
     }
 
-    @SneakyThrows
     @PostMapping
-    public Film createFilm(@Validated @RequestBody Film film) {
+    public Film createFilm(@Validated @RequestBody Film film) throws ValidationException {
         if (films.containsKey(film.getId())) {
             log.error("Фильм с таким Id уже существует");
             throw new ValidationException(HttpStatus.BAD_REQUEST, "Фильм уже существует");
@@ -59,9 +59,8 @@ public class FilmController {
         return film;
     }
 
-    @SneakyThrows
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@RequestBody Film film) throws ValidationException {
         if (!films.containsKey(film.getId())) {
             log.error("Фильм с таким Id не существует");
             throw new ValidationException(HttpStatus.BAD_REQUEST, "Фильм с таким Id не существует");

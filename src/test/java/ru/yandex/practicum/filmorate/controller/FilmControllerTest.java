@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.annotation.Validated;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void createFilm() {
+    void createFilm() throws ValidationException {
         filmController.createFilm(film);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не завелся");
 
@@ -34,15 +35,15 @@ class FilmControllerTest {
         );
     }
 
-    @SneakyThrows
     @Test
-    void updateFilm() {
+    void updateFilm() throws ValidationException {
         filmController.createFilm(film);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не завелся");
 
         Film filmTwo = new Film(film.getId(),"Film", "Film", LocalDate.of(1899,11,30), 150);
         filmController.updateFilm(filmTwo);
         assertEquals(filmController.getFilms().size(), 1, "Фильм не обновился");
+
         Film filmThree = filmController.getFilms().get(1);
         assertAll("Значение не изменилось",
                 () -> assertEquals(filmTwo.getName(), filmThree.getName()),

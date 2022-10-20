@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,7 +21,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser() {
+    void createUser() throws ValidationException {
         userController.createUser(user);
         assertEquals(userController.getUsers().size(), 1, "Задача не создалась");
 
@@ -35,7 +36,7 @@ class UserControllerTest {
 
 
     @Test
-    void updateUser() {
+    void updateUser() throws ValidationException {
         userController.createUser(user);
         assertEquals(userController.getUsers().size(), 1, "Фильм не завелся");
 

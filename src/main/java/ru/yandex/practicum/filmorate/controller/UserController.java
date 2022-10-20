@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -19,16 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("users")
 @Getter
 public class UserController {
-    private ConcurrentHashMap<Integer, User> users = new ConcurrentHashMap<>();
+    private Map<Integer, User> users = new ConcurrentHashMap<>();
     private int idUser = 0;
 
     private void increaseIdUser() {
         ++idUser;
     }
 
-    @SneakyThrows
     @PostMapping
-    public User createUser(@RequestBody final User user) {
+    public User createUser(@RequestBody final User user) throws ValidationException {
         if (users.containsKey(user.getId())) {
             log.error("Пользователь с таким Id существует");
             throw new ValidationException(HttpStatus.BAD_REQUEST, "Пользователь уже существует");
@@ -57,9 +57,8 @@ public class UserController {
         return user;
     }
 
-    @SneakyThrows
     @PutMapping
-    public User updateUser(@Validated @RequestBody final User user) {
+    public User updateUser(@Validated @RequestBody final User user) throws ValidationException {
         if (!users.containsKey(user.getId())) {
             log.error("Пользователь с таким Id не существует");
             throw new ValidationException(HttpStatus.BAD_REQUEST, "Пользователь не существует");
