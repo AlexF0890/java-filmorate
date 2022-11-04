@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -23,33 +22,22 @@ public class UserController {
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public Set<User> showNumbersOfFriends(@PathVariable("id") int id,
                                           @PathVariable("otherId") int otherId) {
-        Set<User> friends = new HashSet<>();
-        Set<Integer> friendsId = userService.getMutualFriend(id, otherId);
-        for (int idUser: friendsId) {
-            friends.add(userService.getInMemoryUserStorage().getUserId(idUser));
-        }
-        return friends;
+        return userService.showNumbersOfFriends(id, otherId);
     }
 
     @GetMapping("/users/{id}/friends")
     public Set<User> showAllFriends(@PathVariable("id") int id)  {
-        Set<User> friends = new HashSet<>();
-        Set<Integer> friendsId = userService.getListFriends(id);
-        for (int idUser: friendsId) {
-            friends.add(userService.getInMemoryUserStorage().getUserId(idUser));
-        }
-        return friends;
+        return userService.showAllFriends(id);
     }
-
 
     @GetMapping("/users/{id}")
     public User findUserId(@PathVariable("id") int id) {
-        return userService.getInMemoryUserStorage().getUserId(id);
+        return userService.findUserId(id);
     }
 
     @GetMapping("/users")
     public Collection<User> findAll() {
-        return userService.getInMemoryUserStorage().getUsers();
+        return userService.findAll();
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
@@ -66,16 +54,16 @@ public class UserController {
 
     @PostMapping("/users")
     public User addUser (@RequestBody User user) throws ValidationException {
-        return userService.getInMemoryUserStorage().createUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping("/users")
     public User putUser(@RequestBody User user) throws ValidationException {
-        return userService.getInMemoryUserStorage().updateUser(user);
+        return userService.putUser(user);
     }
 
     @DeleteMapping("/users")
     public void removeUser(@RequestBody User user){
-        userService.getInMemoryUserStorage().removeUser(user);
+        userService.removeUser(user);
     }
 }

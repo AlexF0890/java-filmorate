@@ -24,12 +24,12 @@ public class FilmController {
 
     @GetMapping("/films/{id}")
     public Film findFilmId(@PathVariable("id") int id) {
-        return filmService.getInMemoryFilmStorage().getFilmId(id);
+        return filmService.findFilmId(id);
     }
 
     @GetMapping("/films")
     public Collection<Film> findAll() {
-        return filmService.getInMemoryFilmStorage().getFilms();
+        return filmService.findAll();
     }
 
     @PutMapping("/films/{id}/like/{userId}")
@@ -46,16 +46,16 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film addFilms(@RequestBody Film film) throws ValidationException {
-        return filmService.getInMemoryFilmStorage().createFilm(film);
+        return filmService.addFilms(film);
     }
 
     @PutMapping("/films")
     public Film updateFilms(@RequestBody Film film) throws ValidationException {
-        return filmService.getInMemoryFilmStorage().updateFilm(film);
+        return filmService.updateFilms(film);
     }
 
     @DeleteMapping("/films")
     public void removeFilms(@RequestBody Film film) throws ValidationException {
-        filmService.getInMemoryFilmStorage().removeFilm(film);
+        filmService.removeFilms(film);
     }
 }

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -100,5 +101,16 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Такого фильма нет");
             throw new FilmNotFoundException("Такого фильма нет");
         }
+    }
+
+    public Collection<Film> sortedList(Integer count){
+        return films.stream()
+                .sorted((f1, f2) -> {
+                    Integer filmOne = f1.getLike().size();
+                    Integer filmTwo = f2.getLike().size();
+                    return filmOne.compareTo(filmTwo)*-1;
+                })
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }

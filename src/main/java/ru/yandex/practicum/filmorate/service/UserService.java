@@ -1,24 +1,24 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @Slf4j
 @Getter
+@RequiredArgsConstructor
 public class UserService {
     private final InMemoryUserStorage inMemoryUserStorage;
-
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
-    }
 
     public void addFriendList(int idUser, int idFriend){
         if (idUser > 0 && idFriend > 0) {
@@ -95,5 +95,43 @@ public class UserService {
         Set<Integer> generalUsers = new HashSet<>(friendsUsers);
         generalUsers.retainAll(friendsFriends);
         return generalUsers;
+    }
+
+    public Set<User> showNumbersOfFriends(int id, int otherId) {
+        Set<User> friends = new HashSet<>();
+        Set<Integer> friendsId = getMutualFriend(id, otherId);
+        for (int idUser: friendsId) {
+            friends.add(inMemoryUserStorage.getUserId(idUser));
+        }
+        return friends;
+    }
+
+    public Set<User> showAllFriends(int id) {
+        Set<User> friends = new HashSet<>();
+        Set<Integer> friendsId = getListFriends(id);
+        for (int idUser: friendsId) {
+            friends.add(inMemoryUserStorage.getUserId(idUser));
+        }
+        return friends;
+    }
+
+    public User findUserId(int id){
+        return inMemoryUserStorage.getUserId(id);
+    }
+
+    public Collection<User> findAll() {
+        return inMemoryUserStorage.getUsers();
+    }
+
+    public User addUser(User user) throws ValidationException {
+        return inMemoryUserStorage.createUser(user);
+    }
+
+    public User putUser(User user) throws ValidationException {
+        return inMemoryUserStorage.updateUser(user);
+    }
+
+    public void removeUser(User user){
+        inMemoryUserStorage.removeUser(user);
     }
 }
