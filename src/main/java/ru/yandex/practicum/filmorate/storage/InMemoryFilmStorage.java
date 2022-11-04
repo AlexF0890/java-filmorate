@@ -103,7 +103,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    public Collection<Film> sortedList(Integer count){
+    public List<Film> sortedList(Integer count){
         return films.stream()
                 .sorted((f1, f2) -> {
                     Integer filmOne = f1.getLike().size();

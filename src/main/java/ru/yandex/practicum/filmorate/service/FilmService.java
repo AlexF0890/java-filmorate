@@ -70,7 +70,7 @@ public class FilmService {
 
 
 
-    public Collection<Film> findFilmByCount(Integer count) {
+    public List<Film> findFilmByCount(Integer count) {
         if(count == null) {
             return inMemoryFilmStorage.sortedList(10);
         } else if (count > 0){
@@ -85,7 +85,7 @@ public class FilmService {
         return inMemoryFilmStorage.getFilmId(id);
     }
 
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return inMemoryFilmStorage.getFilms();
     }
 
