@@ -61,7 +61,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User updateUser(User user) throws ValidationException {
-        if (users.size() < user.getId()) {
+        if (users.size() < user.getId() || user.getId() <= 0) {
             log.error("Пользователь не существует");
             throw new UserNotFoundException("Пользователь не существует");
         }
@@ -89,13 +89,15 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public void removeUser(User user) {
         users.remove(user);
+        log.info("Пользователь удален");
     }
 
     public User getUserId(int idUser) {
-        if (users.size() < idUser){
+        if (users.size() < idUser || idUser <= 0){
             log.error("Такого пользователя нет");
             throw new UserNotFoundException("Такого пользователя нет");
         } else {
+            log.info("Пользователь существует");
             return users.get(idUser-1);
         }
     }
