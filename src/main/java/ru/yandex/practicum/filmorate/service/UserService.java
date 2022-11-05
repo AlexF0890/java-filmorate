@@ -118,6 +118,7 @@ public class UserService {
     }
 
     public Collection<User> findAll() {
+        log.info("Список пользователей");
         return inMemoryUserStorage.getUsers();
     }
 

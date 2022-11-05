@@ -5,6 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Data
 public class User {
@@ -14,7 +15,7 @@ public class User {
     private String email;
 
     private LocalDate birthday;
-    private final Set<Integer> friends = new HashSet<>();
+    private final Set<Integer> friends = new TreeSet<>();
 
     public User (int id, String login, String name, String email, LocalDate birthday){
         this.id = id;
