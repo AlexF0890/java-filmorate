@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -15,7 +16,7 @@ public class User {
     private String email;
 
     private LocalDate birthday;
-    private final Set<Integer> friends = new TreeSet<>();
+    private final Set<Integer> friends = new LinkedHashSet<>();
 
     public User (int id, String login, String name, String email, LocalDate birthday){
         this.id = id;
