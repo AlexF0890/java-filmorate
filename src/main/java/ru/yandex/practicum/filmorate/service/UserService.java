@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Service
@@ -90,13 +91,13 @@ public class UserService {
             log.error("Такого пользователя не существует или список друзей пуст");
             throw new UserNotFoundException("Такого пользователя не существует или список друзей пуст");
         }
-        Set<Integer> generalUsers = new HashSet<>(friendsUsers);
+        Set<Integer> generalUsers = new LinkedHashSet<>(friendsUsers);
         generalUsers.retainAll(friendsFriends);
         return generalUsers;
     }
 
     public Set<User> showNumbersOfFriends(int id, int otherId) {
-        Set<User> friends = new HashSet<>();
+        Set<User> friends = new LinkedHashSet<>();
         Set<Integer> friendsId = getMutualFriend(id, otherId);
         for (int idUser: friendsId) {
             friends.add(inMemoryUserStorage.getUserId(idUser));
@@ -105,7 +106,7 @@ public class UserService {
     }
 
     public Set<User> showAllFriends(int id) {
-        Set<User> friends = new HashSet<>();
+        Set<User> friends = new LinkedHashSet<>();
         Set<Integer> friendsId = getListFriends(id);
         for (int idUser: friendsId) {
             friends.add(inMemoryUserStorage.getUserId(idUser));
