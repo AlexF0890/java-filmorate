@@ -14,7 +14,7 @@ class UserControllerTest {
     private UserController userController;
     private User user;
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp() {
         userController = new UserController();
         user = new User("Alex", "Alex3000", 0, "alex@mail.ru", LocalDate.of(1992,11,01));
@@ -51,5 +51,5 @@ class UserControllerTest {
                 () -> assertEquals(userTwo.getEmail(), userThree.getEmail()),
                 () -> assertEquals(userTwo.getBirthday(), userThree.getBirthday())
         );
-    }
+    }*/
 }

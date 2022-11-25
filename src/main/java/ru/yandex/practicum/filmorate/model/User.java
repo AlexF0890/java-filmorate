@@ -1,17 +1,27 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Data
-@AllArgsConstructor
 public class User {
-    private final String login;
-    private String name;
     private int id;
-    private final String email;
-    private final LocalDate birthday;
+    private String login;
+    private String name;
+    private String email;
+    private LocalDate birthday;
+    private final Set<Integer> friends = new LinkedHashSet<>();
 
+    public User (int id, String login, String name, String email, LocalDate birthday){
+        this.id = id;
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+    }
 }
