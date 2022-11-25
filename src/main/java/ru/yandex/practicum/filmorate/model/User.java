@@ -14,7 +14,6 @@ public class User {
     private String login;
     private String name;
     private String email;
-
     private LocalDate birthday;
     private final Set<Integer> friends = new LinkedHashSet<>();
 
