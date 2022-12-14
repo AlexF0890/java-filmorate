@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.util.List;
 
 @Repository
+@Slf4j
 @Qualifier("MpaDbStorage")
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate mpa;
