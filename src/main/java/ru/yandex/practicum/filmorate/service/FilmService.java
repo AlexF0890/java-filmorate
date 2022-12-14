@@ -1,103 +1,115 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
 @Getter
-@RequiredArgsConstructor
 public class FilmService {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
-    @Autowired
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final FilmStorage filmStorage;
+    private final UserDbStorage userDbStorage;
+    private final GenreDbStorage genreDbStorage;
 
-    public void addLikeFilm (int idFilm, int userId) {
-        if (idFilm > 0 && userId > 0) {
-            Film film = inMemoryFilmStorage.getFilms().get(idFilm - 1);
-            if (film != null) {
-                User user = inMemoryUserStorage.getUsers().get(userId-1);
-                if (user != null) {
-                    log.info("Пользователь поставил лайк");
-                    film.getLike().add(user.getId());
-                } else {
-                    log.error("Такого пользователя не существует");
-                    throw new UserNotFoundException("Такого пользователя не существует");
-                }
-            } else {
-                log.error("Такого фильма не существует");
-                throw new FilmNotFoundException("Такого фильма не существует");
+    public FilmService (@Qualifier("FilmDbStorage")FilmStorage filmStorage,
+                        UserDbStorage userDbStorage, GenreDbStorage genreDbStorage){
+        this.filmStorage = filmStorage;
+        this.userDbStorage = userDbStorage;
+        this.genreDbStorage = genreDbStorage;
+    }
+
+    public Film addFilm(Film film) throws ValidationException {
+        filmException(film);
+        Film filmNew = filmStorage.createFilm(film);
+        log.info("Фильм добавлен");
+        return filmNew;
+    }
+    public Film updateFilm(Film film) throws ValidationException {
+        if (film.getId() <= getAllFilms().size()) {
+            filmException(film);
+            filmStorage.updateFilm(film);
+            log.info("Данные о фильме изменены");
+            return film;
+        } else {
+            throw new FilmNotFoundException("Нет фильма");
+        }
+    }
+
+    public void removeFilm(Film film) {
+            filmStorage.removeFilm(film);
+    }
+
+    public void addLikeFilm (Integer film, Integer user){
+        try {
+            filmStorage.addLike(film, user);
+            log.info("Лайк поставлен");
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("film_id")) {
+                throw new FilmNotFoundException("Фильма с таким id нет");
+            } else if (e.getMessage().contains("user_id")) {
+                throw new UserNotFoundException("Пользователя с таким id нет");
             }
-        } else {
-            log.error("Число не может быть отрицательным");
-            throw new FilmNotFoundException("Число не может быть отрицательным");
         }
     }
 
-    public void removeLikeFilm (int idFilm, int userId) {
-        if (idFilm > 0 && userId > 0) {
-            Film film = inMemoryFilmStorage.getFilms().get(idFilm - 1);
-            if (film != null) {
-                User user = inMemoryUserStorage.getUsers().get(userId-1);
-                if (user != null) {
-                    log.info("Пользователь удалил лайк");
-                    film.getLike().remove(user.getId());
-                } else {
-                    log.error("Такого пользователя не существует");
-                    throw new UserNotFoundException("Такого пользователя не существует");
-                }
-            } else {
-                log.error("Такого фильма не существует");
-                throw new FilmNotFoundException("Такого фильма не существует");
-            }
+    public void removeLikeFilm (Integer film, Integer user){
+        if (film > 0 && user > 0 && getFilmId(film) != null && userDbStorage.findUserById(user) != null) {
+        Set<Integer> like = getFilmId(film).getLike();
+        filmStorage.removeLike(film, user);
+        like.remove(userDbStorage.findUserById(user).getId());
+        log.info("Лайк удален");
         } else {
-            log.error("Число не может быть отрицательным");
-            throw new FilmNotFoundException("Число не может быть отрицательным");
+            throw new FilmNotFoundException("Фильма или пользователя не не существует");
         }
     }
 
-
-
-    public List<Film> findFilmByCount(Integer count) {
-        if(count == null) {
-            return inMemoryFilmStorage.sortedList(10);
-        } else if (count > 0){
-            return inMemoryFilmStorage.sortedList(count);
+    public Film getFilmId(Integer film){
+        if (filmStorage.findFilmById(film) != null) {
+            return filmStorage.findFilmById(film);
         } else {
-            log.error("Число не может быть отрицательным");
-            throw new FilmNotFoundException("Число не может быть отрицательным");
+            throw new FilmNotFoundException("Фильма не существует под id = " + film);
         }
     }
 
-    public Film findFilmId(int id) {
-        return inMemoryFilmStorage.getFilmId(id);
+    public List<Film> getPopularLikeFilms(Integer count) {
+        if (count == null) {
+            return filmStorage.getFilmPopular(10);
+        }
+        return filmStorage.getFilmPopular(count);
+    }
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
     }
 
-    public List<Film> findAll() {
-        return inMemoryFilmStorage.getFilms();
-    }
-
-    public Film addFilms(Film film) throws ValidationException {
-        return inMemoryFilmStorage.createFilm(film);
-    }
-
-    public Film updateFilms(Film film) throws ValidationException {
-        return inMemoryFilmStorage.updateFilm(film);
-    }
-
-    public void removeFilms(Film film) {
-        inMemoryFilmStorage.removeFilm(film);
+    private void filmException(Film film) throws ValidationException {
+        if (StringUtils.isBlank(film.getName())) {
+            log.error("Название фильма не должно быть пустым");
+            throw new ValidationException("Название фильма не должно быть пустым");
+        }
+        if (film.getDescription().length() > 200) {
+            log.error("Описание фильма не должно привышать 200 символов");
+            throw new ValidationException("Описание фильма не должно привышать 200 символов");
+        }
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895,12, 28 ))) {
+            log.debug("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+            throw new ValidationException("Дата релиза фильма не может быть раньше 28 декабря 1895 года");
+        }
+        if (film.getDuration() <= 0) {
+            log.error("Длительность фильма не должна быть меньше или равна нулю");
+            throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
+        }
     }
 }

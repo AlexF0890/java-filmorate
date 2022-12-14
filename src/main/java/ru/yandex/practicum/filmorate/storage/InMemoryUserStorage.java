@@ -29,6 +29,11 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
+    public User findUserById(Integer id) {
+        return null;
+    }
+
+    @Override
     public User createUser(User user) throws ValidationException {
         if (users.contains(user)) {
             log.error("Пользователь уже существует");
@@ -90,6 +95,36 @@ public class InMemoryUserStorage implements UserStorage{
     public void removeUser(User user) {
         users.remove(user);
         log.info("Пользователь удален");
+    }
+
+    @Override
+    public List<User> getUsersAll() {
+        return null;
+    }
+
+    @Override
+    public void addFriendList(Integer user, Integer friend) {
+
+    }
+
+    @Override
+    public void removeFriend(Integer user, Integer friend) {
+
+    }
+
+    @Override
+    public List<User> getMutualFriend(Integer user, Integer friend) {
+        return null;
+    }
+
+    @Override
+    public Boolean isMutualStatus(Integer user, Integer friend) {
+        return null;
+    }
+
+    @Override
+    public List<User> getFriendsList(Integer user) {
+        return null;
     }
 
     public User getUserId(int idUser) {

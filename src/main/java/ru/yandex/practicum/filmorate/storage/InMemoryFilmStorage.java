@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -18,19 +19,36 @@ import java.util.stream.Collectors;
 public class InMemoryFilmStorage implements FilmStorage {
     private final List<Film> films = new ArrayList<>();
     private int idFilm = 0;
+    private final GenreDbStorage genreStorage;
 
-    public InMemoryFilmStorage() {
+    public InMemoryFilmStorage(GenreDbStorage genreStorage) {
+        this.genreStorage = genreStorage;
     }
 
     private void increaseIdFilm() {
         ++idFilm;
     }
 
+    private Collection<Genre> getGenreList() {
+        return genreStorage.getGenreAll();
+    }
+
+    @Override
+    public Film findFilmById(Integer id) {
+        if (films.get(id-1) != null) {
+            getFilmGenre(id);
+            return films.get(id-1);
+        } else {
+            log.error("Такого фильма нет");
+            throw new FilmNotFoundException("Такого фильма нет");
+        }
+    }
+
     @Override
     public Film createFilm(Film film) throws ValidationException {
-        if (films.contains(film)) {
+        if (films.get(film.getId()-1) != null) {
             log.error("Фильм с таким Id уже существует");
-            throw new FilmNotFoundException("Фильм уже существует");
+            throw new FilmNotFoundException("Фильм уже существует1");
         }
         if (StringUtils.isBlank(film.getName())) {
             log.error("Название фильма не должно быть пустым");
@@ -58,7 +76,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) throws ValidationException {
-        if (films.size() < film.getId()) {
+        if (films.get(film.getId()-1) == null) {
             log.error("Фильм не существует");
             throw new FilmNotFoundException("Фильм уже существует");
         }
@@ -79,32 +97,69 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
         }
         log.info("Информация о фильме обновлена");
-        films.set((film.getId() - 1), film);
+        films.add(film);
         return film;
     }
 
     @Override
     public void removeFilm(Film film) {
-        if (!films.contains(film)) {
+        if (films.get(film.getId()-1) == null) {
             log.error("Фильм с таким Id не существует");
             throw new FilmNotFoundException("Фильм с таким Id не существует");
         } else {
             log.info("Фильм удален");
-            films.remove(film);
+            films.remove(film.getId());
         }
     }
 
-    public Film getFilmId(int idFilm) {
-        if (films.size() > idFilm) {
-            return films.get(idFilm - 1);
+    @Override
+    public List<Film> getAllFilms() {
+        return films;
+    }
+
+    @Override
+    public void addLike(Integer film, Integer user) {
+        films.get(film).getLike().add(user);
+    }
+
+    @Override
+    public void removeLike(Integer film, Integer user) {
+        films.get(film).getLike().remove(user);
+    }
+
+    @Override
+    public List<Film> getFilmPopular(Integer count) {
+        if(count == null) {
+            return sortedList(10);
+        } else if (count > 0){
+            return sortedList(count);
         } else {
-            log.error("Такого фильма нет");
-            throw new FilmNotFoundException("Такого фильма нет");
+            log.error("Число не может быть отрицательным");
+            throw new FilmNotFoundException("Число не может быть отрицательным");
         }
     }
 
-    public List<Film> sortedList(Integer count){
-        return films.stream()
+    @Override
+    public List<Integer> getFilmLikeUser(Integer film) {
+        Set<Integer> likes = films.get(film).getLike();
+        return new ArrayList<>(likes);
+    }
+
+    @Override
+    public Set<Genre> getFilmGenre(Integer film) {
+        return null;
+    }
+
+
+    @Override
+    public void deleteGenre(Film film) {
+        List<Genre> genres = film.getGenres();
+        genres.clear();
+    }
+
+    private List<Film> sortedList(Integer count){
+        List<Film> filmsList = new ArrayList<>(films);
+        return filmsList.stream()
                 .sorted((f1, f2) -> {
                     Integer filmOne = f1.getLike().size();
                     Integer filmTwo = f2.getLike().size();

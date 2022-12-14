@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -20,36 +20,36 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
-    public Set<User> showNumbersOfFriends(@PathVariable("id") int id,
-                                          @PathVariable("otherId") int otherId) {
-        return userService.showNumbersOfFriends(id, otherId);
+    public List<User> showNumbersOfFriends(@PathVariable("id") Integer id,
+                                           @PathVariable("otherId") Integer otherId) {
+        return userService.getMutualFriendList(id, otherId);
     }
 
     @GetMapping("/users/{id}/friends")
-    public Set<User> showAllFriends(@PathVariable("id") int id)  {
-        return userService.showAllFriends(id);
+    public List<User> showAllFriends(@PathVariable("id") Integer id)  {
+        return userService.getFriendList(id);
     }
 
     @GetMapping("/users/{id}")
-    public User findUserId(@PathVariable("id") int id) {
-        return userService.findUserId(id);
+    public User findUserId(@PathVariable("id") Integer id) {
+        return userService.getUserId(id);
     }
 
     @GetMapping("/users")
     public Collection<User> findAll() {
-        return userService.findAll();
+        return userService.getAllUsers();
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable("id") int id,
-                               @PathVariable("friendId") int friendId) {
-        userService.addFriendList(id, friendId);
+    public void addFriend(@PathVariable("id") Integer id,
+                               @PathVariable("friendId") Integer friendId) {
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void removeFriend(@PathVariable("id") int id,
-                                  @PathVariable("friendId") int friendId) {
-        userService.removeFriendList(id, friendId);
+    public void removeFriend(@PathVariable("id") Integer id,
+                                  @PathVariable("friendId") Integer friendId) {
+        userService.removeFriend(id, friendId);
     }
 
     @PostMapping("/users")
@@ -59,7 +59,7 @@ public class UserController {
 
     @PutMapping("/users")
     public User putUser(@RequestBody User user) throws ValidationException {
-        return userService.putUser(user);
+        return userService.updateUser(user);
     }
 
     @DeleteMapping("/users")
