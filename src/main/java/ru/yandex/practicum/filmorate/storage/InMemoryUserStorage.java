@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -9,15 +8,15 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
 @Component
-@Getter
 public class InMemoryUserStorage implements UserStorage{
 
-    private final List<User> users = new ArrayList<>();
+    private final HashMap<Integer, User> users = new HashMap<>();
 
     private int idUser = 0;
 
@@ -30,12 +29,16 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User findUserById(Integer id) {
-        return null;
+        if (users.get(id) != null && id > 0) {
+            return users.get(id);
+        } else {
+            throw new UserNotFoundException("Пользователь не существует");
+        }
     }
 
     @Override
     public User createUser(User user) throws ValidationException {
-        if (users.contains(user)) {
+        if (users.get(user.getId()) != null) {
             log.error("Пользователь уже существует");
             throw new UserNotFoundException("Пользователь уже существует");
         }
@@ -58,7 +61,7 @@ public class InMemoryUserStorage implements UserStorage{
 
         increaseIdUser();
         user.setId(idUser);
-        users.add(user);
+        users.put(idUser, user);
         log.info("Пользователь создан");
 
         return user;
@@ -66,7 +69,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User updateUser(User user) throws ValidationException {
-        if (users.size() < user.getId() || user.getId() <= 0) {
+        if (users.get(user.getId()) == null || user.getId() <= 0) {
             log.error("Пользователь не существует");
             throw new UserNotFoundException("Пользователь не существует");
         }
@@ -87,7 +90,7 @@ public class InMemoryUserStorage implements UserStorage{
             throw new ValidationException("Дата рождения не может быть изменена");
         }
         log.info("Пользователь изменен");
-        users.set((user.getId() - 1), user);
+        users.put(user.getId(), user);
         return user;
     }
 
@@ -98,8 +101,8 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public List<User> getUsersAll() {
-        return null;
+    public Collection<User> getUsersAll() {
+        return users.values();
     }
 
     @Override

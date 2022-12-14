@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,7 +24,6 @@ import static java.lang.String.format;
 import static java.util.function.UnaryOperator.identity;
 
 @Repository
-@Slf4j
 @Qualifier("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
@@ -130,7 +128,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getAllFilms() {
+    public Collection<Film> getAllFilms() {
         String sqlQuery = "select * from films as f " +
                 "join mpa as m on m.mpa_id = f.mpa_id";
         List<Film> films = jdbcTemplate.query(sqlQuery, new FilmMapper());

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,12 +12,12 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 @Service
 @Slf4j
-@Getter
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserDbStorage userDbStorage;
@@ -90,7 +89,7 @@ public class FilmService {
         }
         return filmStorage.getFilmPopular(count);
     }
-    public List<Film> getAllFilms() {
+    public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }
 

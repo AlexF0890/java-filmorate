@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,7 +85,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUsersAll() {
+    public Collection<User> getUsersAll() {
         return users.query("select * from users", new UserMapper());
     }
 

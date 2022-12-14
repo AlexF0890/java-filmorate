@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -15,9 +14,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@Getter
 public class InMemoryFilmStorage implements FilmStorage {
-    private final List<Film> films = new ArrayList<>();
+    private final HashMap<Integer, Film> films = new HashMap<>();
     private int idFilm = 0;
     private final GenreDbStorage genreStorage;
 
@@ -29,15 +27,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         ++idFilm;
     }
 
-    private Collection<Genre> getGenreList() {
-        return genreStorage.getGenreAll();
-    }
-
     @Override
     public Film findFilmById(Integer id) {
-        if (films.get(id-1) != null) {
+        if (films.get(id) != null) {
             getFilmGenre(id);
-            return films.get(id-1);
+            return films.get(id);
         } else {
             log.error("Такого фильма нет");
             throw new FilmNotFoundException("Такого фильма нет");
@@ -46,7 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) throws ValidationException {
-        if (films.get(film.getId()-1) != null) {
+        if (films.get(film.getId()) != null) {
             log.error("Фильм с таким Id уже существует");
             throw new FilmNotFoundException("Фильм уже существует1");
         }
@@ -68,7 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         increaseIdFilm();
         film.setId(idFilm);
-        films.add(film);
+        films.put(idFilm, film);
         log.info("Фильм добавлен в список");
 
         return film;
@@ -76,7 +70,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) throws ValidationException {
-        if (films.get(film.getId()-1) == null) {
+        if (films.get(film.getId()) == null) {
             log.error("Фильм не существует");
             throw new FilmNotFoundException("Фильм уже существует");
         }
@@ -97,24 +91,24 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Длительность фильма не должна быть меньше или равна нулю");
         }
         log.info("Информация о фильме обновлена");
-        films.add(film);
+        films.put(film.getId(), film);
         return film;
     }
 
     @Override
     public void removeFilm(Film film) {
-        if (films.get(film.getId()-1) == null) {
+        if (films.get(film.getId()) == null) {
             log.error("Фильм с таким Id не существует");
             throw new FilmNotFoundException("Фильм с таким Id не существует");
         } else {
             log.info("Фильм удален");
-            films.remove(film.getId());
+            films.remove(film);
         }
     }
 
     @Override
-    public List<Film> getAllFilms() {
-        return films;
+    public Collection<Film> getAllFilms() {
+        return films.values();
     }
 
     @Override
@@ -158,7 +152,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     private List<Film> sortedList(Integer count){
-        List<Film> filmsList = new ArrayList<>(films);
+        List<Film> filmsList = new ArrayList<>(films.values());
         return filmsList.stream()
                 .sorted((f1, f2) -> {
                     Integer filmOne = f1.getLike().size();

@@ -35,7 +35,7 @@ public class UserService {
         return userDbStorage.updateUser(user);
     }
 
-    public List<User> getAllUsers(){
+    public Collection<User> getAllUsers(){
         return userDbStorage.getUsersAll();
     }
 
