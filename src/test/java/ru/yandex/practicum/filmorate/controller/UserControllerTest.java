@@ -25,7 +25,6 @@ class UserControllerTest {
     void addUser() {
         userDbStorage.createUser(user);
         assertEquals(user, userDbStorage.findUserById(user.getId()));
-        assertEquals(1, userDbStorage.getUsersAll().size());
 
         User user2 = new User(2, "Login2", "Name2", "email2@mail.ru",
                 LocalDate.of(1978, 11,11));
