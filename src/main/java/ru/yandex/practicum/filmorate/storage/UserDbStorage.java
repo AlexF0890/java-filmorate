@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @Repository
 @Slf4j
-@Qualifier("UserStorage")
+@Qualifier("UserDbStorage")
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate users;
 

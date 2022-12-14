@@ -38,6 +38,7 @@ class UserControllerTest {
         assertEquals(1, userDbStorage.getUsersAll().size());
 
         userDbStorage.removeUser(user2);
+        assertEquals(0, userDbStorage.getUsersAll().size());
     }
 
     @Test
@@ -75,5 +76,8 @@ class UserControllerTest {
 
         assertEquals(1, userDbStorage.getFriendsList(user.getId()).size());
         assertEquals("email2@mail.ru", userDbStorage.getFriendsList(user.getId()).get(0).getEmail());
+
+        userDbStorage.removeUser(user2);
+        userDbStorage.removeUser(user);
     }
 }

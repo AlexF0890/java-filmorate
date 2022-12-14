@@ -17,7 +17,7 @@ import java.util.*;
 public class UserService {
     private final UserDbStorage userDbStorage;
 
-    public UserService (@Qualifier("UserStorage") UserDbStorage userDbStorage){
+    public UserService (@Qualifier("UserDbStorage") UserDbStorage userDbStorage){
         this.userDbStorage = userDbStorage;
     }
 
