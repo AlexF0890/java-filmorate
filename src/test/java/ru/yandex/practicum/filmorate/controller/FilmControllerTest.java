@@ -85,6 +85,7 @@ class FilmControllerTest {
 
         filmDbStorage.removeLike(film.getId(), user.getId());
         assertEquals(0, filmDbStorage.getFilmLikeUser(film.getId()).size());
+        userDbStorage.removeUser(user);
     }
 
     @Test
