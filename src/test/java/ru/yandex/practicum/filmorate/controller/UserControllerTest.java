@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import java.time.LocalDate;
@@ -76,8 +74,5 @@ class UserControllerTest {
 
         assertEquals(1, userDbStorage.getFriendsList(user.getId()).size());
         assertEquals("email2@mail.ru", userDbStorage.getFriendsList(user.getId()).get(0).getEmail());
-
-        userDbStorage.removeUser(user2);
-        userDbStorage.removeUser(user);
     }
 }
