@@ -1,0 +1,41 @@
+package ru.yandex.practicum.filmorate.storage;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.mapper.MpaMapper;
+import ru.yandex.practicum.filmorate.model.Mpa;
+
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class MpaDbStorage implements MpaStorage {
+    private final JdbcTemplate mpa;
+    private final MpaMapper mpaMapper;
+
+    @Override
+    public Mpa getId(Integer id) {
+        try {
+            String sqlQuery = "select * from mpa where mpa_id = ?";
+            List<Mpa> mpaList = mpa.query(sqlQuery, mpaMapper, id);
+            if (mpaList.size() > 0) {
+                return mpaList.get(0);
+            } else {
+                throw new MpaNotFoundException("Такого рейтинга нет");
+            }
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println(e.getMessage());
+            throw new MpaNotFoundException("Такого рейтинга нет.");
+        }
+
+    }
+
+    @Override
+    public List<Mpa> getAll() {
+        String sqlQuery = "select * from mpa";
+        return mpa.query(sqlQuery, mpaMapper);
+    }
+}

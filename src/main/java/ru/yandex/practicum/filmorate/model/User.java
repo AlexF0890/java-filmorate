@@ -1,17 +1,26 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.*;
 
 @Data
-@AllArgsConstructor
+@ToString(of = "id")
 public class User {
-    private final String login;
-    private String name;
     private int id;
-    private final String email;
-    private final LocalDate birthday;
+    private String login;
+    private String name;
+    private String email;
+    private LocalDate birthday;
+    private  List<Integer> friends = new ArrayList<>();
 
+    public User (int id, String login, String name, String email, LocalDate birthday){
+        this.id = id;
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+    }
 }
