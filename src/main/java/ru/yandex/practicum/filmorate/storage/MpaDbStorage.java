@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,21 +11,16 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.util.List;
 
 @Repository
-@Slf4j
-@Qualifier("MpaDbStorage")
+@RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate mpa;
-
-    @Autowired
-    public MpaDbStorage(JdbcTemplate mpa) {
-        this.mpa = mpa;
-    }
+    private final MpaMapper mpaMapper;
 
     @Override
-    public Mpa getMpaId(Integer id) {
+    public Mpa getId(Integer id) {
         try {
             String sqlQuery = "select * from mpa where mpa_id = ?";
-            List<Mpa> mpaList = mpa.query(sqlQuery, new MpaMapper(), id);
+            List<Mpa> mpaList = mpa.query(sqlQuery, mpaMapper, id);
             if (mpaList.size() > 0) {
                 return mpaList.get(0);
             } else {
@@ -41,8 +34,8 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     @Override
-    public List<Mpa> getMpaAll() {
+    public List<Mpa> getAll() {
         String sqlQuery = "select * from mpa";
-        return mpa.query(sqlQuery, new MpaMapper());
+        return mpa.query(sqlQuery, mpaMapper);
     }
 }

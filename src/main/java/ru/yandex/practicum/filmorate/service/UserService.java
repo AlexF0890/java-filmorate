@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,33 +14,29 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final UserDbStorage userDbStorage;
-
-    public UserService (@Qualifier("UserDbStorage") UserDbStorage userDbStorage){
-        this.userDbStorage = userDbStorage;
-    }
-
     public User addUser(User user) throws ValidationException {
-        usersException(user);
-        return userDbStorage.createUser(user);
+        validateUsers(user);
+        return userDbStorage.create(user);
     }
 
     public void removeUser(User user){
-        userDbStorage.removeUser(user);
+        userDbStorage.remove(user);
     }
 
     public User updateUser(User user) throws ValidationException {
-        usersException(user);
-        return userDbStorage.updateUser(user);
+        validateUsers(user);
+        return userDbStorage.update(user);
     }
 
     public Collection<User> getAllUsers(){
-        return userDbStorage.getUsersAll();
+        return userDbStorage.getUsers();
     }
 
     public User getUserId (Integer user) {
-        return userDbStorage.findUserById(user);
+        return userDbStorage.findById(user);
     }
 
     public void addFriend(Integer user, Integer friend){
@@ -68,7 +64,7 @@ public class UserService {
             return userDbStorage.getMutualFriend(user, friend);
     }
 
-    public void usersException (User user) throws ValidationException {
+    public void validateUsers(User user) throws ValidationException {
         if(StringUtils.isBlank(user.getEmail()) || !user.getEmail().contains("@")) {
             log.error("Электронная почта не может быть изменена");
             throw new ValidationException("Электронная почта не может быть изменена");

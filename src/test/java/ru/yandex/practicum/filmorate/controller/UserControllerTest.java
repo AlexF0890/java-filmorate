@@ -22,47 +22,47 @@ class UserControllerTest {
 
     @Test
     void addUser() {
-        userDbStorage.createUser(user);
-        assertEquals(user, userDbStorage.findUserById(user.getId()));
-        assertEquals(1, userDbStorage.getUsersAll().size());
+        userDbStorage.create(user);
+        assertEquals(user, userDbStorage.findById(user.getId()));
+        assertEquals(1, userDbStorage.getUsers().size());
 
         User user2 = new User(2, "Login2", "Name2", "email2@mail.ru",
                 LocalDate.of(1978, 11,11));
-        userDbStorage.createUser(user2);
-        assertEquals(2, userDbStorage.getUsersAll().size());
+        userDbStorage.create(user2);
+        assertEquals(2, userDbStorage.getUsers().size());
 
-        userDbStorage.removeUser(user);
-        assertEquals(1, userDbStorage.getUsersAll().size());
+        userDbStorage.remove(user);
+        assertEquals(1, userDbStorage.getUsers().size());
 
-        userDbStorage.removeUser(user2);
-        assertEquals(0, userDbStorage.getUsersAll().size());
+        userDbStorage.remove(user2);
+        assertEquals(0, userDbStorage.getUsers().size());
     }
 
     @Test
     void updateUser() {
-        userDbStorage.createUser(user);
+        userDbStorage.create(user);
         user.setName("NameUpdate");
-        userDbStorage.updateUser(user);
-        assertEquals("NameUpdate", userDbStorage.findUserById(user.getId()).getName());
+        userDbStorage.update(user);
+        assertEquals("NameUpdate", userDbStorage.findById(user.getId()).getName());
 
-        userDbStorage.removeUser(user);
+        userDbStorage.remove(user);
     }
 
     @Test
     void addNullName() {
         user.setName(null);
-        userDbStorage.createUser(user);
-        assertEquals("Login", userDbStorage.findUserById(user.getId()).getName());
+        userDbStorage.create(user);
+        assertEquals("Login", userDbStorage.findById(user.getId()).getName());
 
-        userDbStorage.removeUser(user);
+        userDbStorage.remove(user);
     }
 
     @Test
     void getFriendsUser() {
-        userDbStorage.createUser(user);
+        userDbStorage.create(user);
         User user2 = new User(2, "Login2", "Name2", "email2@mail.ru",
                 LocalDate.of(1978, 11,11));
-        userDbStorage.createUser(user2);
+        userDbStorage.create(user2);
         userDbStorage.addFriendList(user.getId(), user2.getId());
         assertEquals(false, userDbStorage.isMutualStatus(1,2));
         assertEquals(user2, userDbStorage.getFriendsList(user.getId()).get(0));

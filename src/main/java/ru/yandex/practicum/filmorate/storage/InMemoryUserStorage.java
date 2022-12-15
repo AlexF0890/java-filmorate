@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
-@Component
 public class InMemoryUserStorage implements UserStorage{
 
     private final HashMap<Integer, User> users = new HashMap<>();
@@ -28,7 +27,7 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User findUserById(Integer id) {
+    public User findById(Integer id) {
         if (users.get(id) != null && id > 0) {
             return users.get(id);
         } else {
@@ -37,7 +36,7 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User createUser(User user) throws ValidationException {
+    public User create(User user) throws ValidationException {
         if (users.get(user.getId()) != null) {
             log.error("Пользователь уже существует");
             throw new UserNotFoundException("Пользователь уже существует");
@@ -68,7 +67,7 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User updateUser(User user) throws ValidationException {
+    public User update(User user) throws ValidationException {
         if (users.get(user.getId()) == null || user.getId() <= 0) {
             log.error("Пользователь не существует");
             throw new UserNotFoundException("Пользователь не существует");
@@ -95,13 +94,13 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public void removeUser(User user) {
+    public void remove(User user) {
         users.remove(user);
         log.info("Пользователь удален");
     }
 
     @Override
-    public Collection<User> getUsersAll() {
+    public Collection<User> getUsers() {
         return users.values();
     }
 

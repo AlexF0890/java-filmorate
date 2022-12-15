@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 public interface FilmStorage {
-    Film findFilmById(Integer id);
-    Film createFilm(Film film) throws ValidationException;
-    Film updateFilm(Film film) throws ValidationException;
-    void removeFilm(Film film);
+    Film findById(Integer id);
+    Film create(Film film) throws ValidationException;
+    Film update(Film film) throws ValidationException;
+    void remove(Film film);
     Collection<Film> getAllFilms();
     void addLike(Integer film, Integer user);
     void removeLike(Integer film, Integer user);

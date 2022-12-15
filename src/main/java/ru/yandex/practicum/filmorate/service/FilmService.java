@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,28 +19,21 @@ import java.util.Set;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserDbStorage userDbStorage;
-    private final GenreDbStorage genreDbStorage;
-
-    public FilmService (@Qualifier("FilmDbStorage")FilmStorage filmStorage,
-                        UserDbStorage userDbStorage, GenreDbStorage genreDbStorage){
-        this.filmStorage = filmStorage;
-        this.userDbStorage = userDbStorage;
-        this.genreDbStorage = genreDbStorage;
-    }
 
     public Film addFilm(Film film) throws ValidationException {
-        filmException(film);
-        Film filmNew = filmStorage.createFilm(film);
+        validateFilm(film);
+        Film filmNew = filmStorage.create(film);
         log.info("Фильм добавлен");
         return filmNew;
     }
     public Film updateFilm(Film film) throws ValidationException {
         if (film.getId() <= getAllFilms().size()) {
-            filmException(film);
-            filmStorage.updateFilm(film);
+            validateFilm(film);
+            filmStorage.update(film);
             log.info("Данные о фильме изменены");
             return film;
         } else {
@@ -48,7 +42,7 @@ public class FilmService {
     }
 
     public void removeFilm(Film film) {
-            filmStorage.removeFilm(film);
+            filmStorage.remove(film);
     }
 
     public void addLikeFilm (Integer film, Integer user){
@@ -65,10 +59,10 @@ public class FilmService {
     }
 
     public void removeLikeFilm (Integer film, Integer user){
-        if (film > 0 && user > 0 && getFilmId(film) != null && userDbStorage.findUserById(user) != null) {
+        if (film > 0 && user > 0 && getFilmId(film) != null && userDbStorage.findById(user) != null) {
         Set<Integer> like = getFilmId(film).getLike();
         filmStorage.removeLike(film, user);
-        like.remove(userDbStorage.findUserById(user).getId());
+        like.remove(userDbStorage.findById(user).getId());
         log.info("Лайк удален");
         } else {
             throw new FilmNotFoundException("Фильма или пользователя не не существует");
@@ -76,8 +70,8 @@ public class FilmService {
     }
 
     public Film getFilmId(Integer film){
-        if (filmStorage.findFilmById(film) != null) {
-            return filmStorage.findFilmById(film);
+        if (filmStorage.findById(film) != null) {
+            return filmStorage.findById(film);
         } else {
             throw new FilmNotFoundException("Фильма не существует под id = " + film);
         }
@@ -93,7 +87,7 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    private void filmException(Film film) throws ValidationException {
+    private void validateFilm(Film film) throws ValidationException {
         if (StringUtils.isBlank(film.getName())) {
             log.error("Название фильма не должно быть пустым");
             throw new ValidationException("Название фильма не должно быть пустым");

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,27 +24,20 @@ import static java.lang.String.format;
 import static java.util.function.UnaryOperator.identity;
 
 @Repository
-@Qualifier("FilmDbStorage")
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final GenreDbStorage genreDbStorage;
     private final MpaDbStorage mpaDbStorage;
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, MpaDbStorage mpaDbStorage){
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreDbStorage = genreDbStorage;
-        this.mpaDbStorage = mpaDbStorage;
-    }
+    private final FilmMapper filmMapper;
 
     @Override
-    public Film findFilmById(Integer id) {
+    public Film findById(Integer id) {
         try {
             String sqlQuery = "select f.*, m.* " +
                     "from films as f " +
                     "join mpa as m on f.mpa_id = m.mpa_id " +
                     "where f.film_id = ?";
-            Film film = jdbcTemplate.queryForObject(sqlQuery, new FilmMapper(), id);
+            Film film = jdbcTemplate.queryForObject(sqlQuery, filmMapper, id);
             if (film != null) {
                 film.setGenres(getFilmGenres(film.getId()));
             }
@@ -55,7 +48,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film createFilm(Film film) {
+    public Film create(Film film) {
         String sqlQuery = "INSERT INTO films (film_name, description, release_date, duration, mpa_id) " +
                 "values (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -69,7 +62,7 @@ public class FilmDbStorage implements FilmStorage {
             return stmt;
         }, keyHolder);
         film.setId((keyHolder.getKey()).intValue());
-        film.setMpa(mpaDbStorage.getMpaId(film.getMpa().getId()));
+        film.setMpa(mpaDbStorage.getId(film.getMpa().getId()));
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             Set<Genre> genres = new TreeSet<>((g1, g2) -> g1.getId() - g2.getId());
             genres.addAll(film.getGenres());
@@ -89,7 +82,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) {
+    public Film update(Film film) {
         String sqlQuery = "update films set " +
                 "film_name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
                 "where film_id = ?";
@@ -117,12 +110,12 @@ public class FilmDbStorage implements FilmStorage {
                 }
             });
         }
-        film.setMpa(mpaDbStorage.getMpaId(film.getMpa().getId()));
+        film.setMpa(mpaDbStorage.getId(film.getMpa().getId()));
         return film;
     }
 
     @Override
-    public void removeFilm(Film film) {
+    public void remove(Film film) {
         String sqlQuery = "delete from films where film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
     }
@@ -131,7 +124,7 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAllFilms() {
         String sqlQuery = "select * from films as f " +
                 "join mpa as m on m.mpa_id = f.mpa_id";
-        List<Film> films = jdbcTemplate.query(sqlQuery, new FilmMapper());
+        List<Film> films = jdbcTemplate.query(sqlQuery, filmMapper);
         addGenres(films);
         return films;
     }
@@ -168,7 +161,7 @@ public class FilmDbStorage implements FilmStorage {
                 "group by films.film_id " +
                 "order by rate desc, films.film_id " +
                 "limit ?";
-        return jdbcTemplate.query(sqlQuery, new FilmMapper(), count);
+        return jdbcTemplate.query(sqlQuery, filmMapper, count);
     }
 
     @Override

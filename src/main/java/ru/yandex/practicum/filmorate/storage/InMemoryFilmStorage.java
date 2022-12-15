@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,22 +12,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int idFilm = 0;
-    private final GenreDbStorage genreStorage;
 
-    public InMemoryFilmStorage(GenreDbStorage genreStorage) {
-        this.genreStorage = genreStorage;
-    }
+    public InMemoryFilmStorage(){}
 
     private void increaseIdFilm() {
         ++idFilm;
     }
 
     @Override
-    public Film findFilmById(Integer id) {
+    public Film findById(Integer id) {
         if (films.get(id) != null) {
             getFilmGenre(id);
             return films.get(id);
@@ -39,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film createFilm(Film film) throws ValidationException {
+    public Film create(Film film) throws ValidationException {
         if (films.get(film.getId()) != null) {
             log.error("Фильм с таким Id уже существует");
             throw new FilmNotFoundException("Фильм уже существует1");
@@ -69,7 +64,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) throws ValidationException {
+    public Film update(Film film) throws ValidationException {
         if (films.get(film.getId()) == null) {
             log.error("Фильм не существует");
             throw new FilmNotFoundException("Фильм уже существует");
@@ -96,7 +91,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void removeFilm(Film film) {
+    public void remove(Film film) {
         if (films.get(film.getId()) == null) {
             log.error("Фильм с таким Id не существует");
             throw new FilmNotFoundException("Фильм с таким Id не существует");

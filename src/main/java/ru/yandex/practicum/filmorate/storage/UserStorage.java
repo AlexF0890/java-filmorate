@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.List;
 
 public interface UserStorage {
-    User findUserById(Integer id);
-    User createUser(User user) throws ValidationException;
-    User updateUser(User user) throws ValidationException;
-    void removeUser(User user);
-    Collection<User> getUsersAll();
+    User findById(Integer id);
+    User create(User user) throws ValidationException;
+    User update(User user) throws ValidationException;
+    void remove(User user);
+    Collection<User> getUsers();
     void addFriendList(Integer user, Integer friend);
     void removeFriend(Integer user, Integer friend);
     List<User> getMutualFriend(Integer user, Integer friend);

@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,28 +18,23 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-@Slf4j
-@Qualifier("UserDbStorage")
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate users;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate users){
-        this.users=users;
-    }
+    private final UserMapper userMapper;
 
     @Override
-    public User findUserById(Integer id) {
+    public User findById(Integer id) {
         String sqlQuery = "select * from users where user_id = ?";
         try {
-            return users.queryForObject(sqlQuery, new UserMapper(), id);
+            return users.queryForObject(sqlQuery, userMapper, id);
         } catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException("Пользователя не существует");
         }
     }
 
     @Override
-    public User createUser(User user) {
+    public User create(User user) {
         String sqlQuery = "insert into users (login, user_name, email, birthday) " +
                 "values (?, ?, ?, ?)";
         if (user.getName() == null) {
@@ -61,8 +54,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) {
-        if(findUserById(user.getId()) != null) {
+    public User update(User user) {
+        if(findById(user.getId()) != null) {
             String sqlQuery = "update users set " +
                     "login = ?, user_name = ?, email = ?, birthday = ?" +
                     "where user_id = ?";
@@ -79,14 +72,14 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void removeUser(User user) {
+    public void remove(User user) {
         String sqlQuery = "delete from users where user_id = ?";
         users.update(sqlQuery, user.getId());
     }
 
     @Override
-    public Collection<User> getUsersAll() {
-        return users.query("select * from users", new UserMapper());
+    public Collection<User> getUsers() {
+        return users.query("select * from users", userMapper);
     }
 
     @Override
@@ -118,7 +111,7 @@ public class UserDbStorage implements UserStorage {
                 "inner join friend as f on users.user_id = f.friend_id " +
                 "where u.user_id = ? and f.user_id = ?";
         users.query(sqlQuery, (rs,rowNum) ->
-                userCommon.add(new UserMapper().mapRow(rs, rowNum)), user, friend);
+                userCommon.add(userMapper.mapRow(rs, rowNum)), user, friend);
         return new ArrayList<>(userCommon);
     }
 
@@ -127,6 +120,6 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "select users.* from friend " +
                 "join users on users.user_id = friend.friend_id " +
                 "where friend.user_id = ?";
-        return users.query(sqlQuery, new UserMapper(), user);
+        return users.query(sqlQuery, userMapper, user);
     }
 }

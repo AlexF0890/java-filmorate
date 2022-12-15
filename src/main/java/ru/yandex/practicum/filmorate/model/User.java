@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Data
+@ToString(of = "id")
 public class User {
     private int id;
     private String login;

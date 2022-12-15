@@ -2,12 +2,14 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Data
 @NoArgsConstructor
+@ToString(of = "id")
 public class Film{
     private int id;
     private String name;

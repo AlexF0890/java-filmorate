@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
@@ -9,18 +8,14 @@ import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MpaService {
-    private final MpaDbStorage mpaDbStorage1;
-
-    public MpaService(@Qualifier("MpaDbStorage") MpaDbStorage mpaDbStorage1) {
-        this.mpaDbStorage1 = mpaDbStorage1;
-    }
-
+    private final MpaDbStorage mpaDbStorage;
     public Mpa getMpa (Integer mpa) {
-        return mpaDbStorage1.getMpaId(mpa);
+        return mpaDbStorage.getId(mpa);
     }
 
     public List<Mpa> getAllMpa() {
-        return mpaDbStorage1.getMpaAll();
+        return mpaDbStorage.getAll();
     }
 }
